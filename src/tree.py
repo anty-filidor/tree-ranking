@@ -5,6 +5,7 @@ import networkx as nx
 import numpy as np
 from networkx.drawing.nx_pydot import graphviz_layout
 import matplotlib.pyplot as plt
+from typing import List, Set, Optional
 
 log = logging.getLogger(__name__)
 
@@ -41,13 +42,59 @@ def read_tree(tree_path: pathlib.Path, draw: bool) -> nx.DiGraph:
     return tree_nx
 
 
-# TODO - add docstring
-def draw_tree(tree):
-    values = [tree.nodes[node]['color'] for node in tree.nodes()]
-    pos = graphviz_layout(tree, prog="dot")
-    nx.draw(tree, pos, with_labels=True, cmap=plt.get_cmap('viridis'), node_color=values)
-    pos_attrs = {node: (coords[0]-10, coords[1]+10) for node, coords in pos.items()}
+def find_sub_trees(tree: nx.DiGraph) -> List[Set[int]]:
+    """
+    Finds subtrees in the tree by the criteria of similar color.
+
+    :param tree: tree to find subtrees for
+
+    :return: a list of sets of nodes from the tree that create subtrees
+    """
+    _tree = tree.copy()
+
+    edges_to_remove = [
+        edge for edge in tree.edges() if
+        tree.nodes[edge[0]]['color'] != tree.nodes[edge[1]]['color']
+    ]
+    log.debug(f"Found edges to remove as: {edges_to_remove}")
+    _tree.remove_edges_from(edges_to_remove)
+
+    sub_trees_nodes = list(nx.weakly_connected_components(_tree))
+    log.info(f"Detected following subtrees: {sub_trees_nodes}")
+
+    # draw_tree(_tree)
+    # draw_tree(tree)
+
+    return sub_trees_nodes
+
+
+def draw_tree(tree: nx.DiGraph, file_path: Optional[pathlib.Path]) -> None:
+    """
+    Draws a tree depicting colors of nodes, labels and direction of connections.
+
+    :param tree: a tree to display
+    :param file_path: an optional path to the file for saving the image
+
+    :return: None
+    """
+    nodes_position = graphviz_layout(tree, prog="dot")
+    attrs_position = {
+        node: (coords[0]-10, coords[1]+10) for node, coords in nodes_position.items()
+    }
+
     node_labels = nx.get_node_attributes(tree, 'value')
-    custom_node_attrs = {node: f"(val {attr})" for node, attr in node_labels.items()}
-    nx.draw_networkx_labels(tree, pos_attrs, labels=custom_node_attrs, font_size=8)
-    plt.show()
+    node_values = {node: f"(val {attr})" for node, attr in node_labels.items()}
+    node_colors = [tree.nodes[node]['color'] for node in tree.nodes()]
+
+    nx.draw(
+        tree, nodes_position,
+        with_labels=True,
+        cmap=plt.get_cmap('viridis'),
+        node_color=node_colors
+    )
+    nx.draw_networkx_labels(tree, attrs_position, labels=node_values, font_size=8)
+
+    if file_path is None:
+        plt.show()
+    else:
+        plt.savefig(file_path)

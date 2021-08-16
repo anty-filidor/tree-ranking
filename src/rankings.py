@@ -1,10 +1,10 @@
 import matplotlib.pyplot as plt
 import networkx as nx
-from typing import List, Tuple, Set
+from typing import List, Tuple, Set, Dict
 from dataclasses import dataclass
 import logging
 
-from .tree import draw_tree
+from .tree import draw_tree, find_sub_trees
 
 log = logging.getLogger(__name__)
 
@@ -26,20 +26,20 @@ def compute_ranking(tree: nx.DiGraph, method: str) -> List[Tuple[str, int]]:
     elif method == "subtree-average-value":
         return _compute_subtree_average_value(tree)
 
-    raise ValueError(f"Computation method {method} unknown to the program!")
+    raise ValueError(f"Computation method {method} unknown!")
 
 
 def _compute_subtree_count(tree: nx.DiGraph) -> List[Tuple[str, int]]:
-
+    """Computes ranking of tree basing of count of subtrees with the same color."""
     metric = {}
-    for sub_tree in _find_sub_trees(tree):
+    for sub_tree in find_sub_trees(tree):
         color = tree.nodes[sub_tree.pop()]['color']
         if metric.get(color) is None:
             metric[color] = 1
         else:
             metric[color] += 1
 
-    return metric
+    return prepare_result(metric)
 
 
 def _compute_subtree_max_depth(tree: nx.DiGraph) -> List[Tuple[str, int]]:
@@ -50,21 +50,5 @@ def _compute_subtree_average_value(tree: nx.DiGraph) -> List[Tuple[str, int]]:
     return 2
 
 
-def _find_sub_trees(tree: nx.DiGraph) -> List[Set[int]]:
-    """Finds subtrees in the tree by the criteria of similar color."""
-    _tree = tree.copy()
-
-    edges_to_remove = [
-        edge for edge in tree.edges() if
-        tree.nodes[edge[0]]['color'] != tree.nodes[edge[1]]['color']
-    ]
-    log.debug(f"Found edges to remove as: {edges_to_remove}")
-    _tree.remove_edges_from(edges_to_remove)
-
-    sub_trees = list(nx.weakly_connected_components(_tree))
-    log.info(f"Detected following subtrees: {sub_trees}")
-
-    # draw_tree(_tree)
-    # draw_tree(tree)
-
-    return sub_trees
+def prepare_result(pre_result: Dict[str, int]) -> List[Tuple[str, int]]:
+    return sorted([(k, v) for k, v in pre_result.items()], key=lambda x: (-1*x[1], x[0]))
