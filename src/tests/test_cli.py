@@ -22,7 +22,7 @@ from src import cli
         ),
     ],
 )
-def test_correct_args(args, exp_output) -> None:
+def test_correct_args(args, exp_output):
     parsed_args = cli.parse_cli_args(args)
     assert parsed_args == exp_output
 
@@ -36,6 +36,6 @@ def test_correct_args(args, exp_output) -> None:
         ["--criteria", "subtree-average-value", "--file", "/path/file", "--foo"],
     ],
 )
-def test_inorrect_args(args) -> None:
+def test_inorrect_args(args):
     with pytest.raises(ValueError):
         cli.parse_cli_args(args)
