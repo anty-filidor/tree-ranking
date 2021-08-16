@@ -1,16 +1,17 @@
+"""Contains functions that facilitate command line usage of this program."""
 import argparse
-from typing import List
 import logging
 import sys
+from typing import List, NoReturn
 
 
 class MyArgumentParser(argparse.ArgumentParser):
     """This class has been implemented just to raise ValueError instead of SystemExit."""
 
-    def error(self, message: str) -> None:
+    def error(self, message: str) -> NoReturn:
         """Raises ValueError when arguments are incorrect."""
         self.print_help(sys.stderr)
-        raise ValueError('%s: error: %s\n' % (self.prog, message))
+        raise ValueError("%s: error: %s\n" % (self.prog, message))
 
 
 def parse_cli_args(cli_args: List[str]) -> argparse.Namespace:
@@ -21,19 +22,15 @@ def parse_cli_args(cli_args: List[str]) -> argparse.Namespace:
 
     :return: parsed arguments
     """
-    parser = MyArgumentParser(
-        description="I'm running a Tree Ranker."
-    )
+    parser = MyArgumentParser(description="I'm running a Tree Ranker.")
     parser.add_argument(
         "--criteria",
         help="determines a way that ranking is computed",
         required=True,
-        choices=['subtree-count', 'subtree-maxdepth', 'subtree-average-value']
+        choices=["subtree-count", "subtree-maxdepth", "subtree-average-value"],
     )
     parser.add_argument(
-        "--file",
-        help="path to the cvs file with tree defined",
-        required=True,
+        "--file", help="path to the cvs file with tree defined", required=True,
     )
 
     return parser.parse_args(cli_args)

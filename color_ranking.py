@@ -1,9 +1,9 @@
+"""Contain functions that compute rankings of trees."""
 import logging
 import pathlib
 import sys
 
-from src import cli, tree, rankings
-
+from src import cli, rankings, tree
 
 if __name__ == "__main__":
 

@@ -1,11 +1,12 @@
-import pathlib
 import logging
-import pandas as pd
+import pathlib
+from typing import List, Optional, Set
+
+import matplotlib.pyplot as plt
 import networkx as nx
 import numpy as np
+import pandas as pd
 from networkx.drawing.nx_pydot import graphviz_layout
-import matplotlib.pyplot as plt
-from typing import List, Set, Optional
 
 log = logging.getLogger(__name__)
 
@@ -20,24 +21,24 @@ def read_tree(tree_path: pathlib.Path, draw: bool) -> nx.DiGraph:
     :return: the NetworkX Graph
     """
     if not tree_path.exists():
-        raise FileNotFoundError(f"Given path \"{tree_path}\" is not valid")
+        raise FileNotFoundError(f'Given path "{tree_path}" is not valid')
 
-    tree_df = pd.read_csv(tree_path, sep=';', encoding='utf-8')
+    tree_df = pd.read_csv(tree_path, sep=";", encoding="utf-8")
 
-    columns_exp = {'color', 'value', 'id', 'parent_id'}
+    columns_exp = {"color", "value", "id", "parent_id"}
     if not columns_exp.issubset(tree_df.columns):
         raise ValueError(
-            f"File \"{tree_path}\" is not valid (should contain {columns_exp})"
+            f'File "{tree_path}" is not valid (should contain {columns_exp})'
         )
 
     tree_nx = nx.DiGraph()
     for _, row in tree_df.iterrows():
-        tree_nx.add_node(int(row['id']), color=row['color'], value=row['value'])
-        if not np.isnan(row['parent_id']):
-            tree_nx.add_edge(int(row['parent_id']), int(row['id']))
+        tree_nx.add_node(int(row["id"]), color=row["color"], value=row["value"])
+        if not np.isnan(row["parent_id"]):
+            tree_nx.add_edge(int(row["parent_id"]), int(row["id"]))
 
     if draw:
-        draw_tree(tree_nx)
+        draw_tree(tree_nx, None)
 
     return tree_nx
 
@@ -53,8 +54,9 @@ def find_sub_trees(tree: nx.DiGraph) -> List[Set[int]]:
     _tree = tree.copy()
 
     edges_to_remove = [
-        edge for edge in tree.edges() if
-        tree.nodes[edge[0]]['color'] != tree.nodes[edge[1]]['color']
+        edge
+        for edge in tree.edges()
+        if tree.nodes[edge[0]]["color"] != tree.nodes[edge[1]]["color"]
     ]
     log.debug(f"Found edges to remove as: {edges_to_remove}")
     _tree.remove_edges_from(edges_to_remove)
@@ -62,8 +64,8 @@ def find_sub_trees(tree: nx.DiGraph) -> List[Set[int]]:
     sub_trees_nodes = list(nx.weakly_connected_components(_tree))
     log.info(f"Detected following subtrees: {sub_trees_nodes}")
 
-    # draw_tree(_tree)
-    # draw_tree(tree)
+    # draw_tree(_tree, None)
+    # draw_tree(tree, None)
 
     return sub_trees_nodes
 
@@ -79,18 +81,19 @@ def draw_tree(tree: nx.DiGraph, file_path: Optional[pathlib.Path]) -> None:
     """
     nodes_position = graphviz_layout(tree, prog="dot")
     attrs_position = {
-        node: (coords[0]-10, coords[1]+10) for node, coords in nodes_position.items()
+        node: (coords[0] - 10, coords[1] + 10) for node, coords in nodes_position.items()
     }
 
-    node_labels = nx.get_node_attributes(tree, 'value')
+    node_labels = nx.get_node_attributes(tree, "value")
     node_values = {node: f"(val {attr})" for node, attr in node_labels.items()}
-    node_colors = [tree.nodes[node]['color'] for node in tree.nodes()]
+    node_colors = [tree.nodes[node]["color"] for node in tree.nodes()]
 
     nx.draw(
-        tree, nodes_position,
+        tree,
+        nodes_position,
         with_labels=True,
-        cmap=plt.get_cmap('viridis'),
-        node_color=node_colors
+        cmap=plt.get_cmap("viridis"),
+        node_color=node_colors,
     )
     nx.draw_networkx_labels(tree, attrs_position, labels=node_values, font_size=8)
 
