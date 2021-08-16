@@ -1,0 +1,8 @@
+id;parent_id;color;value;​
+1;;yellow;70;​
+2;1;blue;20;​
+3;1;yellow;30;​
+4;2;blue;80;​
+5;3;yellow;200;​
+6;3;green;400;​
+7;6;blue;200;

@@ -1,0 +1,16 @@
+python color_ranking.py --file /path/tree_02.csv --criteria subtree-count​
+[('orange', 3), ('red', 3), ('green', 2), ('pink', 2), ('blue', 1)]
+
+​
+python color_ranking.py --file /path/tree_02.csv --criteria subtree-maxdepth​
+[('blue', 5), ('red', 3), ('green', 2), ('orange', 2), ('pink', 1)]
+
+​
+python color_ranking.py --file /path/tree_02.csv --criteria subtree-average-value​
+[('blue', 750), ('red', 396), ('orange', 266), ('green', 225), ('pink', 160)]
+
+
+
+
+
+
