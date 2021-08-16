@@ -1,18 +1,16 @@
 import argparse
 from typing import List
 import logging
+import sys
 
 
-def init_logger() -> None:
-    """Initialises logger."""
-    ch = logging.StreamHandler()
+class MyArgumentParser(argparse.ArgumentParser):
+    """This class has been implemented just to raise ValueError instead of SystemExit."""
 
-    logging.basicConfig(
-        level=logging.INFO,
-        format='[%(asctime)-8s] [%(levelname)s] msg: "%(message)s"',
-        datefmt="%H:%M:%S",
-        handlers=[ch],
-    )
+    def error(self, message: str) -> None:
+        """Raises ValueError when arguments are incorrect."""
+        self.print_help(sys.stderr)
+        raise ValueError('%s: error: %s\n' % (self.prog, message))
 
 
 def parse_cli_args(cli_args: List[str]) -> argparse.Namespace:
@@ -21,9 +19,9 @@ def parse_cli_args(cli_args: List[str]) -> argparse.Namespace:
 
     :param cli_args: console arguments
 
-    :return:
+    :return: parsed arguments
     """
-    parser = argparse.ArgumentParser(
+    parser = MyArgumentParser(
         description="I'm running a Tree Ranker."
     )
     parser.add_argument(
@@ -39,3 +37,12 @@ def parse_cli_args(cli_args: List[str]) -> argparse.Namespace:
     )
 
     return parser.parse_args(cli_args)
+
+
+def init_logger() -> None:
+    """Initialises logger."""
+    logging.basicConfig(
+        level=logging.INFO,
+        format='[%(asctime)-8s] [%(levelname)s] msg: "%(message)s"',
+        datefmt="%H:%M:%S",
+    )

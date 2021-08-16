@@ -2,7 +2,7 @@ import logging
 import pathlib
 import sys
 
-from src import cli
+from src import cli, tree
 
 
 if __name__ == "__main__":
@@ -19,4 +19,7 @@ if __name__ == "__main__":
     # print out parsed arguments
     log.info(f"Passed path with tree file as: {path_to_csv}")
     log.info(f"Passed method of ranking computation as: {computation_method}")
+
+    # read the tree
+    tree.read_tree(path_to_csv)
 
