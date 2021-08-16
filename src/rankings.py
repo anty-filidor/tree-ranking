@@ -2,6 +2,8 @@ import networkx as nx
 from typing import List, Tuple, Dict
 import logging
 
+import numpy as np
+
 from .tree import find_sub_trees
 
 log = logging.getLogger(__name__)
@@ -59,8 +61,24 @@ def _compute_subtree_max_depth(tree: nx.DiGraph) -> List[Tuple[str, int]]:
 
 
 def _compute_subtree_average_value(tree: nx.DiGraph) -> List[Tuple[str, int]]:
-    return 2
+    """Compute ranking of tree basing on a avg value of subtrees with the same color."""
+    metric = {}
+    for sub_tree_nodes in find_sub_trees(tree):
+
+        sub_tree_value = sum([tree.nodes[n]['value'] for n in sub_tree_nodes])
+
+        color = tree.nodes[sub_tree_nodes.pop()]['color']
+        if metric.get(color) is None:
+            metric[color] = [sub_tree_value]
+        else:
+            metric[color].append(sub_tree_value)
+
+    return prepare_result_1(metric, lambda x: int(np.average(x)))
 
 
 def prepare_result(pre_result: Dict[str, int]) -> List[Tuple[str, int]]:
     return sorted([(k, v) for k, v in pre_result.items()], key=lambda x: (-1*x[1], x[0]))
+
+
+def prepare_result_1(pre_result: Dict[str, List[int]], roll_up_fun) -> List[Tuple[str, int]]:
+    return sorted([(k, roll_up_fun(v)) for k, v in pre_result.items()], key=lambda x: (-1*x[1], x[0]))
