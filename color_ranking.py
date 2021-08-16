@@ -21,5 +21,4 @@ if __name__ == "__main__":
     log.info("Tree has been read successfully!")
 
     rank = rankings.compute_ranking(tree, computation_method)
-    log.critical(f"Ranking {computation_method} computed on tree {path_to_csv}")
-    log.critical(rank)
+    log.critical(f"Ranking result: {rank}")
