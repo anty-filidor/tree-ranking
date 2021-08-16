@@ -11,7 +11,7 @@ class MyArgumentParser(argparse.ArgumentParser):
     def error(self, message: str) -> NoReturn:
         """Raises ValueError when arguments are incorrect."""
         self.print_help(sys.stderr)
-        raise ValueError("%s: error: %s\n" % (self.prog, message))
+        raise ValueError(f"{self.prog}: error: {message}\n")
 
 
 def parse_cli_args(cli_args: List[str]) -> argparse.Namespace:

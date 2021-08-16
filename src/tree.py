@@ -13,7 +13,7 @@ log = logging.getLogger(__name__)
 
 def read_tree(tree_path: pathlib.Path, draw: bool) -> nx.DiGraph:
     """
-    Reads tree stored in the csv to the NetworkX Graph.
+    Reads tree stored in the csv to the NetworkX DiGraph.
 
     :param tree_path: path to the csv
     :param draw: a flag - if true tree will be displayed
@@ -21,14 +21,14 @@ def read_tree(tree_path: pathlib.Path, draw: bool) -> nx.DiGraph:
     :return: the NetworkX Graph
     """
     if not tree_path.exists():
-        raise FileNotFoundError(f'Given path "{tree_path}" is not valid')
+        raise FileNotFoundError(f"Given path '{tree_path}' is not valid")
 
     tree_df = pd.read_csv(tree_path, sep=";", encoding="utf-8")
 
     columns_exp = {"color", "value", "id", "parent_id"}
     if not columns_exp.issubset(tree_df.columns):
         raise ValueError(
-            f'File "{tree_path}" is not valid (should contain {columns_exp})'
+            f"File '{tree_path}' is not valid (should contain {columns_exp})"
         )
 
     tree_nx = nx.DiGraph()
@@ -64,8 +64,9 @@ def find_sub_trees(tree: nx.DiGraph) -> List[Set[int]]:
     sub_trees_nodes = list(nx.weakly_connected_components(_tree))
     log.info(f"Detected following subtrees: {sub_trees_nodes}")
 
-    # draw_tree(_tree, None)
+    # uncomment to get visualisations
     # draw_tree(tree, None)
+    # draw_tree(_tree, None)
 
     return sub_trees_nodes
 

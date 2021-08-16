@@ -1,4 +1,4 @@
-"""Contain functions that compute rankings of trees."""
+"""Main script of the solution."""
 import logging
 import pathlib
 import sys
