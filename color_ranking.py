@@ -21,5 +21,5 @@ if __name__ == "__main__":
     log.info(f"Passed method of ranking computation as: {computation_method}")
 
     # read the tree
-    tree.read_tree(path_to_csv)
+    tree.read_tree(path_to_csv, False)
 
