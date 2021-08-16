@@ -9,7 +9,7 @@ import matplotlib.pyplot as plt
 log = logging.getLogger(__name__)
 
 
-def read_tree(tree_path: pathlib.Path, draw: bool) -> nx.Graph:
+def read_tree(tree_path: pathlib.Path, draw: bool) -> nx.DiGraph:
     """
     Reads tree stored in the csv to the NetworkX Graph.
 
@@ -29,7 +29,7 @@ def read_tree(tree_path: pathlib.Path, draw: bool) -> nx.Graph:
             f"File \"{tree_path}\" is not valid (should contain {columns_exp})"
         )
 
-    tree_nx = nx.Graph()
+    tree_nx = nx.DiGraph()
     for _, row in tree_df.iterrows():
         tree_nx.add_node(int(row['id']), color=row['color'], value=row['value'])
         if not np.isnan(row['parent_id']):
