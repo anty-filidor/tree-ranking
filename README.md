@@ -1,5 +1,5 @@
 # Tree Ranking
-This repository contains implementation of task described in 'Zadanie - Ranking kolorów w drzewie.pdf'
+This repository contains implementation of task described in 'TASK.md'
 
 Author: Michał Czuba
 Date: 16.08.2021
